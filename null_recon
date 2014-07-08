@@ -1,0 +1,222 @@
+﻿#!/usr/bin/python
+__author__ = 'mannea'
+import os
+import os.path
+import sys
+import datetime
+import time
+import threading
+import xml.etree.ElementTree as ET
+
+
+def date_time_stamp():
+    r = str(datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S")).rstrip()
+    return r
+
+
+sam_i_am = os.popen('whoami').read().rstrip()
+current_dir = os.popen('pwd').read().rstrip()
+run_dir = current_dir + '/' + str(date_time_stamp())
+log_file = run_dir + '/' + 'recon.log'
+
+
+class LogWriter():
+
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def info(txt):
+        txt = "INFO:: "+date_time_stamp() + "| " + txt
+        l = open(log_file, "a")
+        l.write(txt + '\n')
+        print(txt)
+        l.close()
+
+    @staticmethod
+    def warning(txt):
+        txt = "WARN:: "+date_time_stamp() + "| " + txt
+        l = open(log_file, "a")
+        l.write(txt + '\n')
+        print(txt)
+        l.close()
+
+    @staticmethod
+    def error(txt):
+        txt = "ERROR:: "+date_time_stamp() + "| " + txt
+        l = open(log_file, "a")
+        l.write(txt + '\n')
+        print(txt)
+        l.close()
+
+
+def banner_text():
+    return '==============================================================='
+
+
+def nmap_tcp_scan(address):
+    LogWriter().info("nmap TCP scan on " + address)
+    address = address.strip()
+    scan_xml_log = run_dir + '/' + address + '/' + 'TCP_scan.xml'
+    scan_log = run_dir + '/' + address + '/' + 'TCP_scan.nmap'
+    tcp_scan = "xterm -e \" sudo nmap -vv -Pn -A -sC -sS -T 4 -p- -oN '%s' -oX '%s' %s \"" % (scan_log, scan_xml_log, address)
+    os.system(tcp_scan)
+    eval_results(scan_xml_log)
+
+def nmap_udp_scan(address):
+    LogWriter().info("nmap UDP scan on " + address)
+    address = address.strip()
+    scan_xml_log = run_dir + '/' + address + '/' + 'UDP_scan.xml'
+    scan_log = run_dir + '/' + address + '/' + 'UDP_scan.nmap'
+    udp_scan = "xterm -e \"sudo nmap -vv -Pn -A -sC -sU -T 4 --top-ports 200 -oN '%s' -oX '%s' %s \"" % (scan_log, scan_xml_log, address)
+    os.system(udp_scan)
+    eval_results(scan_xml_log)
+
+def enum_ftp():
+    pass
+    #xterm -e "nmap -sV -Pn -vv -p 20 --script=ftp-anon,ftp-bounce,ftp-libopie,ftp-proftpd-backdoor,ftp-vsftpd-backdoor,ftp-vuln-cve2010-4221 -oX '/root/scans/2014-06-24_102122/192.168.1.100/enum_ftp.nmap' 192.168.1.100; bash"
+
+
+
+def enum_ssh(address, port, source_protocol):
+    LogWriter.info(str('enumerating ssh: ' + address +':'+ port))
+    scan_log = run_dir + '/' + address + '/' + source_protocol + '_%s_ENUM_SSH.xml' % (port)
+    http_scan = "xterm -e \"sudo nmap -sV -Pn -vv -p %s --script=ssh-hostkey --script-args ssh_hostkey=all -oX '%s' %s \"" % (
+        port, scan_log, address)
+    LogWriter.info(str(http_scan))
+    os.system(http_scan)
+
+
+def enum_http(address, port, source_protocol):
+    LogWriter.info(str('enumerating http: ' + address +':'+ port))
+    scan_log = run_dir + '/' + address + '/' + source_protocol + '_%s_ENUM_HTTP.xml' % (port)
+    http_scan = "xterm -e \"sudo nmap -sV -Pn -vv -p %s --script=http-vhosts,http-userdir-enum,http-apache-negotiation,http-backup-finder,http-config-backup,http-default-accounts,http-email-harvest,http-methods,http-method-tamper,http-passwd,http-robots.txt -oX '%s' %s \"" % (
+        port, scan_log, address)
+    LogWriter.info(str(http_scan))
+    os.system(http_scan)
+    #Lets see if there are any PHP pages now...
+    crawl_log = run_dir + '/' + address + '/' + source_protocol + '_%s_HTTP_CRAWL.txt' % (port)
+    crawl = "wget --spider --force-html -r -l1 http://%s 2>&1 | grep 'Saving to:' | awk '{ print $3 }' | awk '{print substr($0, 0, length($0)-0)}' | awk '{print substr($1,2); }' > %s" % (
+        address, crawl_log
+    )
+    os.system(crawl)
+
+
+def enum_mysql(address, port, source_protocol):
+    LogWriter.info(str('enumerating mysql: ' + address +':'+ port))
+    scan_log = run_dir + '/' + address + '/' + source_protocol + '_%s_ENUM_MYSQL.xml' % (port)
+    http_scan = "xterm -e \"sudo nmap -sV -Pn -vv -p %s --script=mysql-audit,mysql-info,mysql-enum,mysql-users -oX '%s' %s \"" % (
+        port, scan_log, address)
+    LogWriter.info(str(http_scan))
+    os.system(http_scan)
+
+
+def enum_vnc(address, port, source_protocol):
+    LogWriter.info(str('enumerating vnc: ' + address +':'+ port))
+    scan_log = run_dir + '/' + address + '/' + source_protocol + '_%s_ENUM_VNC.xml' % (port)
+    http_scan = "xterm -e \"sudo nmap -sV -Pn -vv -p %s --script=vnc-info,vnc-brute,realvnc-auth-bypass -oX '%s' %s \"" % (
+        port, scan_log, address)
+    LogWriter.info(str(http_scan))
+    os.system(http_scan)
+
+
+def eval_results(nmap_file):
+    tree = ET.parse(nmap_file)
+    root = tree.getroot()
+    target_list = []
+
+    target_hostname = ''
+    target_address = ''
+
+    for hostname in root.iter('hostname'):
+        target_hostname = hostname.attrib['name']
+
+    for address in root.iter('address'):
+        if address.attrib['addrtype'] == "ipv4":
+            target_address = address.attrib['addr']
+
+    for port in root.iter('port'):
+        #print port.attrib
+        for service in port.iter('service'):
+            target = {'hostname': target_hostname, 'address': target_address, 'service': service.attrib['name'],
+                      'port': port.attrib['portid']}
+            target_list.append(target)
+
+    LogWriter().info(str('Found the following open ports based on file: ' + nmap_file))
+    for target in target_list:
+        LogWriter.info(str(target))
+
+    if 'UDP' in nmap_file:
+        source_protocol = 'UDP'
+    if 'TCP' in nmap_file:
+        source_protocol = 'TCP'
+        
+    enum_targets(target_list, source_protocol)
+
+
+def enum_targets(target_list, source_protocol):
+    for target in target_list:
+        if target['service'] == 'ssh':
+            t = threading.Thread(target=enum_ssh, args=(target['address'], target['port'], source_protocol))
+            t.start()
+
+        if target['service'] == 'http-proxy':
+            t = threading.Thread(target=enum_http, args=(target['address'], target['port'], source_protocol))
+            t.start()
+
+        if target['service'] == 'http':
+            t = threading.Thread(target=enum_http, args=(target['address'], target['port'], source_protocol))
+            t.start()
+
+        if target['service'] == 'https':
+            t = threading.Thread(target=enum_http, args=(target['address'], target['port'], source_protocol))
+            t.start()
+
+        if target['service'] == 'mysql':
+            t = threading.Thread(target=enum_mysql, args=(target['address'], target['port'], source_protocol))
+            t.start()
+
+        if target['service'] == 'vnc':
+            t = threading.Thread(target=enum_vnc, args=(target['address'], target['port'], source_protocol))
+            t.start()
+
+#
+#
+#
+
+
+def exec_scan(scan_file):
+    if not os.path.isfile(run_dir):
+        os.system('mkdir ' + run_dir)
+
+    LogWriter().info(':::::SCAN INITIALIZED::::::')
+    LogWriter.info(banner_text())
+
+    addr_cnt = 0
+    f = [line.strip() for line in open(scan_file)]
+    thread_list = []
+    for address in f:
+        if not os.path.isfile(run_dir + '/' + address):
+            os.system('mkdir ' + run_dir + '/' + address)
+
+        addr_cnt += 1
+        t1 = threading.Thread(target=nmap_tcp_scan, args=(address,))
+        t1.setName(run_dir + '/' + address + '/' + 'TCP_scan')
+        thread_list.append(t1)
+
+        t2 = threading.Thread(target=nmap_udp_scan, args=(address,))
+        t1.setName(run_dir + '/' + address + '/' + 'UDP_scan')
+        thread_list.append(t2)
+
+        t1.start()
+        t2.start()
+    recursion_modifier = addr_cnt * 10000
+    sys.setrecursionlimit(recursion_modifier)
+
+
+if len(sys.argv) != 2:
+    print "Usage: filename.py <path to targets.txt>"
+    sys.exit(0)
+else:
+    pass
+    exec_scan(sys.argv[1])

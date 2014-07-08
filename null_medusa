@@ -1,0 +1,16 @@
+﻿#!/usr/bin/python
+__author__ = 'mannea'
+import sys
+import os
+
+if len(sys.argv) != 5:
+    print "null_hydra <ip address> <user> <password list> <service>"
+    sys.exit(0)
+
+address = sys.argv[1].strip()
+user = sys.argv[2].strip()
+pass_list = sys.argv[3].strip()
+service = sys.argv[4].strip()
+
+cmd = 'xterm +sb -geometry 110x24 -e "medusa -h %s -U %s -P %s -e ns -t 2 -f -M %s" &' % (address, user, pass_list, service)
+os.system(cmd)

@@ -1,0 +1,31 @@
+﻿#!/usr/bin/python
+__author__ = 'mannea'
+import sys
+import os
+
+if len(sys.argv) != 3:
+    print "null_sslcipher <password> <in file> "
+    sys.exit(0)
+
+current_dir = os.popen('pwd').read().rstrip()
+
+password = sys.argv[1].strip()
+in_file = sys.argv[2].strip()
+out_file = current_dir + '/.null_sslcipher.txt'
+
+
+ciphers = os.popen('openssl list-cipher-commands').read().rstrip()
+ciphers = ciphers.split('\n')
+
+if os.path.isfile(out_file):
+    os.system('rm ' + out_file)
+
+out_put = open(out_file, "a")
+
+for cipher in ciphers:
+    cmd = 'openssl enc -d -%s -in %s -k %s' % (cipher, in_file, password)
+    result = os.popen(cmd).read().rstrip()
+    out_put.write(cmd + '\n')
+    out_put.write(result + '\n')
+
+os.system('strings %s'% out_file)

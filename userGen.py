@@ -1,0 +1,63 @@
+#!/usr/bin/python
+__author__ = 'mannea'
+import sys
+import os
+from random import shuffle
+
+if len(sys.argv) != 3:
+    print "<first name> <last name>"
+    sys.exit(0)
+
+current_dir = os.popen('pwd').read().rstrip()
+
+first_name = sys.argv[1].strip()
+last_name = sys.argv[2].strip()
+
+first_name = first_name.lower()
+last_name = last_name.lower()
+
+names = []
+
+names.append(((first_name[:1]) + last_name))
+names.append(last_name + (first_name[:1]))
+names.append(last_name)
+names.append(first_name)
+
+names.append(first_name + '.' + last_name)
+names.append(last_name + '.' + first_name)
+names.append(first_name + '_' + last_name)
+names.append(last_name + '_' + first_name)
+
+names.append(first_name + last_name)
+names.append(last_name + first_name)
+
+names.append(((first_name[:5]) + (last_name[:1])))
+names.append(((first_name[:6]) + (last_name[:1])))
+names.append(((first_name[:7]) + (last_name[:1])))
+
+names.append(((first_name[:5]) + (last_name[:1])) + '1')
+names.append(((first_name[:6]) + (last_name[:1])) + '1')
+names.append(((first_name[:7]) + (last_name[:1])) + '1')
+
+names.append(((first_name[:5]) + (last_name[:1])) + '2')
+names.append(((first_name[:6]) + (last_name[:1])) + '2')
+names.append(((first_name[:7]) + (last_name[:1])) + '2')
+
+names.append(((last_name[:5]) + (first_name[:1])))
+names.append(((last_name[:6]) + (first_name[:1])))
+names.append(((last_name[:7]) + (first_name[:1])))
+
+names.append(((last_name[:5]) + (first_name[:1])) + '1')
+names.append(((last_name[:6]) + (first_name[:1])) + '1')
+names.append(((last_name[:7]) + (first_name[:1])) + '1')
+
+names.append(((last_name[:5]) + (first_name[:1])) + '2')
+names.append(((last_name[:6]) + (first_name[:1])) + '2')
+names.append(((last_name[:7]) + (first_name[:1])) + '2')
+
+names = list(set(names))
+
+shuffle(names)
+
+for n in names:
+    print n

@@ -17,7 +17,7 @@ def date_time_stamp():
 sam_i_am = os.popen('whoami').read().rstrip()
 current_dir = os.popen('pwd').read().rstrip()
 run_dir = current_dir + '/' + str(date_time_stamp())
-log_file = run_dir + '/' + 'recon.log'
+log_file = current_dir + '/' + 'recon.log'
 
 
 class LogWriter():
@@ -59,7 +59,7 @@ def nmap_tcp_scan(address):
     address = address.strip()
     scan_xml_log = run_dir + '/' + address + '/' + 'TCP_scan.xml'
     scan_log = run_dir + '/' + address + '/' + 'TCP_scan.nmap'
-    tcp_scan = "xterm -e \" sudo nmap -vv -Pn -A -sC -sS -T 4 -p- -oN '%s' -oX '%s' %s \"" % (scan_log, scan_xml_log, address)
+    tcp_scan = "xterm -e \" sudo nmap -vv -Pn -A -sC -sS -T 4 --top-ports 1000 -p- -oN '%s' -oX '%s' %s \"" % (scan_log, scan_xml_log, address)
     os.system(tcp_scan)
     eval_results(scan_xml_log)
 
@@ -150,7 +150,7 @@ def eval_results(nmap_file):
         source_protocol = 'UDP'
     if 'TCP' in nmap_file:
         source_protocol = 'TCP'
-        
+
     enum_targets(target_list, source_protocol)
 
 

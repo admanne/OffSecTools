@@ -1,4 +1,4 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 __author__ = 'admanne'
 import sys
 import os
@@ -10,8 +10,6 @@ if len(sys.argv) != 4:
 subnet = sys.argv[1].strip()
 start = int(sys.argv[2].strip())
 stop = int(sys.argv[3].strip())
-
-print subnet
 
 for x in range(start, stop):
     addr = str(subnet)+str(x)

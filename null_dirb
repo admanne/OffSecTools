@@ -1,0 +1,33 @@
+#!/usr/bin/python
+#
+__author__ = 'admanne'
+import os
+import os.path
+import sys
+import datetime
+import time
+import threading
+
+
+def date_time_stamp():
+    r = str(datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S")).rstrip()
+    return r
+
+if len(sys.argv) != 2:
+    print "Usage: null_dirb address "
+    sys.exit(0)
+
+address = str(sys.argv[1])
+output = date_time_stamp()+".txt"
+
+if address[:4] != "http":
+	print "http?"
+	sys.exit(0)
+
+def dirb_thread(command_chain, blank):
+    os.system(command_chain)
+
+cmd = 'xterm -e "dirb '+address+' /root/lists/dirb/dirbwordlist.txt -w -o DIRB-'+output+'"&'
+print(cmd)
+t = threading.Thread(target=dirb_thread, args=(cmd, ""))
+t.start()

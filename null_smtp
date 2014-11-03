@@ -6,7 +6,7 @@ import sys
 __author__ = 'mannea'
 
 if len(sys.argv) != 3:
-    print "Usage: null_smtp <ip address> <string>"
+    print "Usage: null_smtp <ip address> <string/address>"
     sys.exit(0)
 
 address = sys.argv[1]

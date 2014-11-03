@@ -1,0 +1,57 @@
+#!/usr/bin/python
+#
+__author__ = 'admanne'
+import os
+import os.path
+import sys
+import datetime
+import time
+import threading
+
+if len(sys.argv) != 2:
+    print "Usage: dirbust.py <targets>"
+    sys.exit(0)
+
+targets = str(sys.argv[1])
+folders = ["/usr/share/dirb/wordlists/", "/usr/share/dirb/wordlists/vulns/"]
+
+def dirb_thread(command_chain, blank):
+    os.system(command_chain)
+
+out_put_files = []
+
+
+
+f = [line.strip() for line in open(targets)]
+for address in f:
+    command_chain=""
+    print "INFO: Starting dirb scan for " + address
+    folder = '/usr/share/dirb/wordlists/vulns'
+    command_count = 0
+    for wordfile in os.listdir(folder):
+        wordlist = folder+wordfile
+        if wordlist[-3:] == "txt":
+            outfile = str(address)+str(".dirb")
+            url = "http://"+address
+            out_put_files.append(outfile)
+            command_chain += "xterm -e \"dirb %s %s -o %s -r \"; " % (url, wordlist, outfile)
+    command_count += 1
+    #print(command_count)
+    #print(command_chain)
+    t = threading.Thread(target=dirb_thread, args=(command_chain, ""))
+    t.start()
+
+def dirb_analyze():
+    files = [f for f in os.listdir('.') if os.path.isfile(f)]
+    for f in files:
+        if f[-4:] == "dirb":
+            os.system('sort -u '+f)
+            with open(f+'-results.txt', 'w') as outfile:
+                with open(f) as infile:
+                    outfile.write('#############    '+f + '    #############\n')
+                    for line in infile:
+                        if "DIRECTORY" in line or "+" in line:
+                            outfile.write(line)
+                    outfile.write('#########################################\n')
+            os.system('sort -u '+f+'-results.txt')
+dirb_analyze()

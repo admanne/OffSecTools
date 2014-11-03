@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 __author__ = 'mannea'
 import os
 import os.path
@@ -13,11 +13,22 @@ def date_time_stamp():
     r = str(datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S")).rstrip()
     return r
 
-
+# Some global stuff
 sam_i_am = os.popen('whoami').read().rstrip()
 current_dir = os.popen('pwd').read().rstrip()
 run_dir = current_dir + '/' + str(date_time_stamp())
-log_file = current_dir + '/' + 'recon.log'
+log_file = run_dir + '/' + 'recon.log'
+#
+#  width+height+x+y
+# xt_width="100"
+# xt_height="10"
+
+# def xterm_offset():
+#     x=0
+#     y=0
+#     xterm="100x10+"+str(x)+"+"str(y)
+#     return xterm
+
 
 
 class LogWriter():
@@ -59,7 +70,7 @@ def nmap_tcp_scan(address):
     address = address.strip()
     scan_xml_log = run_dir + '/' + address + '/' + 'TCP_scan.xml'
     scan_log = run_dir + '/' + address + '/' + 'TCP_scan.nmap'
-    tcp_scan = "xterm -e \" sudo nmap -vv -Pn -A -sC -sS -T 4 --top-ports 1000 -p- -oN '%s' -oX '%s' %s \"" % (scan_log, scan_xml_log, address)
+    tcp_scan = "xterm -e \" sudo nmap -vv -Pn -A -sC -sT -T 4 --top-ports 2000 -p- -oN '%s' -oX '%s' %s \"" % (scan_log, scan_xml_log, address)
     os.system(tcp_scan)
     eval_results(scan_xml_log)
 
@@ -68,32 +79,45 @@ def nmap_udp_scan(address):
     address = address.strip()
     scan_xml_log = run_dir + '/' + address + '/' + 'UDP_scan.xml'
     scan_log = run_dir + '/' + address + '/' + 'UDP_scan.nmap'
-    udp_scan = "xterm -e \"sudo nmap -vv -Pn -A -sC -sU -T 4 --top-ports 200 -oN '%s' -oX '%s' %s \"" % (scan_log, scan_xml_log, address)
+    udp_scan = "xterm -e \"sudo nmap -vv -Pn -A -sC -sU -T 4 --top-ports 1000 -oN '%s' -oX '%s' %s \"" % (scan_log, scan_xml_log, address)
     os.system(udp_scan)
-    eval_results(scan_xml_log)
-
-def enum_ftp():
-    pass
-    #xterm -e "nmap -sV -Pn -vv -p 20 --script=ftp-anon,ftp-bounce,ftp-libopie,ftp-proftpd-backdoor,ftp-vsftpd-backdoor,ftp-vuln-cve2010-4221 -oX '/root/scans/2014-06-24_102122/192.168.1.100/enum_ftp.nmap' 192.168.1.100; bash"
+    #eval_results(scan_xml_log)
+##
+##
+##
+def enum_ftp(address, port, source_protocol):
+    LogWriter.info(str('enumerating ftp: ' + address +':'+ port))
+    scan_log = run_dir + '/' + address + '/' + source_protocol + '_%s_ENUM_FTP.xml' % (port)
+    http_scan = "xterm -e \"nmap -sV -Pn -vv -p %s --script=ftp-anon,ftp-bounce,ftp-libopie,ftp-proftpd-backdoor,ftp-vsftpd-backdoor,ftp-vuln-cve2010-4221 -oX '%s' %s \"" % (
+        port, scan_log, address)
+    LogWriter.info(str(http_scan))
+    os.system(http_scan)
 
 
 
 def enum_ssh(address, port, source_protocol):
     LogWriter.info(str('enumerating ssh: ' + address +':'+ port))
     scan_log = run_dir + '/' + address + '/' + source_protocol + '_%s_ENUM_SSH.xml' % (port)
-    http_scan = "xterm -e \"sudo nmap -sV -Pn -vv -p %s --script=ssh-hostkey --script-args ssh_hostkey=all -oX '%s' %s \"" % (
+    enum = (
+        "xterm -e \"sudo nmap -sV -Pn -vv -p %s --script=ssh-hostkey --script-args ssh_hostkey=all -oX '%s' %s \"" % (
         port, scan_log, address)
-    LogWriter.info(str(http_scan))
-    os.system(http_scan)
+    )
+    LogWriter.info(str(enum))
+    os.system(enum)
 
 
 def enum_http(address, port, source_protocol):
     LogWriter.info(str('enumerating http: ' + address +':'+ port))
-    scan_log = run_dir + '/' + address + '/' + source_protocol + '_%s_ENUM_HTTP.xml' % (port)
-    http_scan = "xterm -e \"sudo nmap -sV -Pn -vv -p %s --script=http-vhosts,http-userdir-enum,http-apache-negotiation,http-backup-finder,http-config-backup,http-default-accounts,http-email-harvest,http-methods,http-method-tamper,http-passwd,http-robots.txt -oX '%s' %s \"" % (
-        port, scan_log, address)
-    LogWriter.info(str(http_scan))
-    os.system(http_scan)
+    scan_log = run_dir + '/' + address + '/' + source_protocol + '_%s_ENUM_HTTP' % (port)
+
+    enum=(
+        "xterm -e \"nmap -sV -sT -Pn -vv -p %s --script=http-huawei-hg5xx-vuln,http-iis-webdav-vuln,http-vmware-path-vuln,http-vuln-cve2009-3960,"
+        "http-vuln-cve2010-0738,http-vuln-cve2010-2861,http-vuln-cve2011-3192,http-vuln-cve2011-3368,http-vuln-cve2012-1823,"
+        "http-vuln-cve2013-0156 -oX '%s.xml' -oN '%s.nmap' %s\"" % (
+            port, scan_log, scan_log, address))
+
+    LogWriter.info(str(enum))
+    os.system(enum)
     #Lets see if there are any PHP pages now...
     crawl_log = run_dir + '/' + address + '/' + source_protocol + '_%s_HTTP_CRAWL.txt' % (port)
     crawl = "wget --spider --force-html -r -l1 http://%s 2>&1 | grep 'Saving to:' | awk '{ print $3 }' | awk '{print substr($0, 0, length($0)-0)}' | awk '{print substr($1,2); }' > %s" % (
@@ -104,20 +128,37 @@ def enum_http(address, port, source_protocol):
 
 def enum_mysql(address, port, source_protocol):
     LogWriter.info(str('enumerating mysql: ' + address +':'+ port))
-    scan_log = run_dir + '/' + address + '/' + source_protocol + '_%s_ENUM_MYSQL.xml' % (port)
-    http_scan = "xterm -e \"sudo nmap -sV -Pn -vv -p %s --script=mysql-audit,mysql-info,mysql-enum,mysql-users -oX '%s' %s \"" % (
-        port, scan_log, address)
-    LogWriter.info(str(http_scan))
-    os.system(http_scan)
+    scan_log = run_dir + '/' + address + '/' + source_protocol + '_%s_ENUM_MYSQL' % (port)
+
+    enum=(
+    "xterm -e \"nmap -sV -Pn -vv -p %s --script="
+    "ms-sql-brute,"
+    "ms-sql-config,"
+    "ms-sql-dac,"
+    "ms-sql-dump-hashes,"
+    "ms-sql-empty-password,"
+    "ms-sql-hasdbaccess,"
+    "ms-sql-info,"
+    "ms-sql-query,"
+    "ms-sql-tables,"
+    "ms-sql-xp-cmdshell"
+    " -oX '%s.xml' -oN '%s.nmap' %s\"" % (
+        port, scan_log, scan_log, address)
+    )
+
+    LogWriter.info(str(enum))
+    os.system(enum)
 
 
 def enum_vnc(address, port, source_protocol):
     LogWriter.info(str('enumerating vnc: ' + address +':'+ port))
     scan_log = run_dir + '/' + address + '/' + source_protocol + '_%s_ENUM_VNC.xml' % (port)
-    http_scan = "xterm -e \"sudo nmap -sV -Pn -vv -p %s --script=vnc-info,vnc-brute,realvnc-auth-bypass -oX '%s' %s \"" % (
+    enum = (
+        "xterm -e \"sudo nmap -sV -Pn -vv -p %s --script=vnc-info,vnc-brute,realvnc-auth-bypass -oX '%s' %s \"" % (
         port, scan_log, address)
-    LogWriter.info(str(http_scan))
-    os.system(http_scan)
+    )
+    LogWriter.info(str(enum))
+    os.system(enum)
 
 
 def eval_results(nmap_file):
@@ -136,7 +177,7 @@ def eval_results(nmap_file):
             target_address = address.attrib['addr']
 
     for port in root.iter('port'):
-        #print port.attrib
+        print port.attrib
         for service in port.iter('service'):
             target = {'hostname': target_hostname, 'address': target_address, 'service': service.attrib['name'],
                       'port': port.attrib['portid']}
@@ -150,12 +191,15 @@ def eval_results(nmap_file):
         source_protocol = 'UDP'
     if 'TCP' in nmap_file:
         source_protocol = 'TCP'
-
-    enum_targets(target_list, source_protocol)
+        enum_targets(target_list, source_protocol)
 
 
 def enum_targets(target_list, source_protocol):
     for target in target_list:
+        if target['service'] == 'ftp':
+            t = threading.Thread(target=enum_ftp, args=(target['address'], target['port'], source_protocol))
+            t.start()
+
         if target['service'] == 'ssh':
             t = threading.Thread(target=enum_ssh, args=(target['address'], target['port'], source_protocol))
             t.start()

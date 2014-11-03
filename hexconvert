@@ -1,0 +1,16 @@
+#!/usr/bin/ruby
+
+puts "Please provide the address to convert..."
+puts "Example: 0x7c86fed3"
+
+ret = gets.chomp
+finalret = ret.scan(/.{2}/)
+
+$i = 0
+
+puts "The new value is... "
+while $i < finalret.length  do
+   print '\x'+finalret[$i]
+   $i +=1
+end
+puts

@@ -1,0 +1,21 @@
+#!/usr/bin/python
+__author__ = 'admanne'
+import sys
+import os
+
+if len(sys.argv) != 3:
+    print "<address-range> <ports>"
+    print "Example:  null_enum_oracle 192.168.15.200-254 1521"
+    sys.exit(0)
+
+address = sys.argv[1].strip()
+port = sys.argv[2].strip()
+# Enum
+os.system(
+    "xterm -e \"nmap -sV -Pn -vv -p %s --script="
+    "oracle-brute.nse,"
+	"oracle-brute-stealth.nse,"
+	"oracle-enum-users.nse,"
+	"oracle-sid-brute"
+    " -oX 'enum_oracle_%s.xml' -oN 'enum_oracle_%s.nmap' %s\";bash" % (
+        port, address, address, address))

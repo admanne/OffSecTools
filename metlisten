@@ -3,7 +3,7 @@ clear
 echo "*********************************************"
 echo "   METASPLOIT LINUX METERPRETER LISTENER    *"
 echo "*********************************************"
-echo "Here is a network device list available on yor machine"
+echo "Network device list..."
 cat /proc/net/dev | tr -s  ' ' | cut -d ' ' -f1,2 | sed -e '1,2d'
 echo -e "What network interface are we gonna use ?  \c"
 read interface

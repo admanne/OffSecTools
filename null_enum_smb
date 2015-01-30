@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 __author__ = 'admanne'
 import sys
 import os
@@ -12,26 +12,26 @@ address = sys.argv[1].strip()
 # Enum
 enum = (
     "xterm -e \"nmap -sV -sT -Pn -vv -p 139,445 --script="
-	"smb-brute,"
-	"smb-check-vulns,"
-	"smb-enum-domains,"
-	"smb-enum-groups,"
-	"smb-enum-processes,"
-	"smb-enum-sessions,"
-	"smb-enum-shares,"
-	"smb-enum-users,"
-	"smb-mbenum,"
-	"smb-os-discovery,"
-	"smb-print-text,"
-	"smb-psexec,"
-	"smb-security-mode,"
-	"smb-server-stats,"
-	"smb-system-info,"
-	"smbv2-enabled,"
-	"smb-vuln-ms10-054,"
-	"smb-vuln-ms10-061,"
-	"smb-ls,"
-	"smb-flood "
+    "smb-brute,"
+    "smb-check-vulns,"
+    "smb-enum-domains,"
+    "smb-enum-groups,"
+    "smb-enum-processes,"
+    "smb-enum-sessions,"
+    "smb-enum-shares,"
+    "smb-enum-users,"
+    "smb-mbenum,"
+    "smb-os-discovery,"
+    "smb-print-text,"
+    "smb-psexec,"
+    "smb-security-mode,"
+    "smb-server-stats,"
+    "smb-system-info,"
+    "smbv2-enabled,"
+    "smb-vuln-ms10-054,"
+    "smb-vuln-ms10-061,"
+    "smb-ls,"
+    "smb-flood "
     "--script-args=unsafe=1 -oX 'enum_smb_%s.xml' -oN 'enum_smb_%s.nmap' %s\"" % (
         address, address, address))
 print enum

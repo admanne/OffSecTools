@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 __author__ = 'mannea'
 import sys
 import datetime
@@ -13,6 +13,7 @@ if len(sys.argv) != 6:
 def date_time_stamp():
     r = str(datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S")).rstrip()
     return r
+
 
 current_dir = os.popen('pwd').read().rstrip()
 

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 #
 __author__ = 'admanne'
 import os
@@ -12,51 +12,66 @@ if len(sys.argv) != 2:
     print "Usage: null_httpfuzz address "
     sys.exit(0)
 
+
 def date_time_stamp():
     r = str(datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S")).rstrip()
     return r
+
 
 if len(sys.argv) != 2:
     print "Usage: null_httpfuzz address "
     sys.exit(0)
 
 address = str(sys.argv[1])
-output = date_time_stamp()+".txt"
+output = date_time_stamp() + ".txt"
 
 if address[:4] != "http":
-	print "http?"
-	sys.exit(0)
+    print "http?"
+    sys.exit(0)
+
 
 def dirb_thread(command_chain, blank):
     os.system(command_chain)
 
-cmd = 'xterm -geometry 100x10+10+50 -e "dirb '+address+' /root/lists/dirb/dirbwordlist.txt -w -o dirb-'+output+'"&'
+
+# Dirb list made from;
+# for i in `ls /usr/share/dirb/wordlists/vulns/`; do echo "cat $i >> ~/lists/DirbMegaList.txt"; done;
+# for i in `ls /usr/share/dirb/wordlists`; do echo "cat $i >> ~/lists/DirbMegaList.txt"; done;
+
+
+#  for i in `ls /usr/share/dirb/wordlists/vulns/`; do cat /usr/share/dirb/wordlists/vulns/$i >> ~/lists/DirbMegaList.txt; done;
+#  for i in `ls /usr/share/dirb/wordlists/`; do cat /usr/share/dirb/wordlists/$i >> ~/lists/DirbMegaList.txt; done;
+
+
+
+
+cmd = 'xterm -geometry 100x10+10+50 -e "dirb ' + address + ' /root/lists/dirb/DirbMegaList.txt -w -o dirb-' + output + '"&'
 os.system(cmd)
 
-cmd =  'xterm -geometry 100x10+10+250 -e "'
-cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/apache.txt --hc 400,401,403,404 -o html "+address+"/FUZZ 2>> wfuzz-"+output+".html;"
-cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/cgis.txt --hc 400,401,403,404 -o html "+address+"/FUZZ 2>> wfuzz-"+output+".html;"
-cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/coldfusion.txt --hc 400,401,403,404 -o html "+address+"/FUZZ 2>> wfuzz-"+output+".html;"
-cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/dirTraversal-nix.txt --hc 400,401,403,404 -o html "+address+"/FUZZ 2>> wfuzz-"+output+".html;"
-cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/dirTraversal.txt --hc 400,401,403,404 -o html "+address+"/FUZZ 2>> wfuzz-"+output+".html;"
-cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/dirTraversal-win.txt --hc 400,401,403,404 -o html "+address+"/FUZZ 2>> wfuzz-"+output+".html;"
-cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/domino.txt --hc 400,401,403,404 -o html "+address+"/FUZZ 2>> wfuzz-"+output+".html;"
-cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/fatwire_pagenames.txt --hc 400,401,403,404 -o html "+address+"/FUZZ 2>> wfuzz-"+output+".html;"
-cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/fatwire.txt --hc 400,401,403,404 -o html "+address+"/FUZZ 2>> wfuzz-"+output+".html;"
-cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/frontpage.txt --hc 400,401,403,404 -o html "+address+"/FUZZ 2>> wfuzz-"+output+".html;"
-cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/iis.txt --hc 400,401,403,404 -o html "+address+"/FUZZ 2>> wfuzz-"+output+".html;"
-cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/iplanet.txt --hc 400,401,403,404 -o html "+address+"/FUZZ 2>> wfuzz-"+output+".html;"
-cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/jrun.txt --hc 400,401,403,404 -o html "+address+"/FUZZ 2>> wfuzz-"+output+".html;"
-cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/netware.txt --hc 400,401,403,404 -o html "+address+"/FUZZ 2>> wfuzz-"+output+".html;"
-cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/oracle9i.txt --hc 400,401,403,404 -o html "+address+"/FUZZ 2>> wfuzz-"+output+".html;"
-cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/sharepoint.txt --hc 400,401,403,404 -o html "+address+"/FUZZ 2>> wfuzz-"+output+".html;"
-cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/sql_inj.txt --hc 400,401,403,404 -o html "+address+"/FUZZ 2>> wfuzz-"+output+".html;"
-cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/sunas.txt --hc 400,401,403,404 -o html "+address+"/FUZZ 2>> wfuzz-"+output+".html;"
-cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/tests.txt --hc 400,401,403,404 -o html "+address+"/FUZZ 2>> wfuzz-"+output+".html;"
-cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/tomcat.txt --hc 400,401,403,404 -o html "+address+"/FUZZ 2>> wfuzz-"+output+".html;"
-cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/vignette.txt --hc 400,401,403,404 -o html "+address+"/FUZZ 2>> wfuzz-"+output+".html;"
-cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/weblogic.txt --hc 400,401,403,404 -o html "+address+"/FUZZ 2>> wfuzz-"+output+".html;"
-cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/websphere.txt --hc 400,401,403,404 -o html "+address+"/FUZZ 2>> wfuzz-"+output+".html;"
+cmd = 'xterm -geometry 100x10+10+250 -e "'
+cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/apache.txt --hc 400,401,403,404 -o html " + address + "/FUZZ 2>> wfuzz-" + output + ".html;"
+cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/cgis.txt --hc 400,401,403,404 -o html " + address + "/FUZZ 2>> wfuzz-" + output + ".html;"
+cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/coldfusion.txt --hc 400,401,403,404 -o html " + address + "/FUZZ 2>> wfuzz-" + output + ".html;"
+cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/dirTraversal-nix.txt --hc 400,401,403,404 -o html " + address + "/FUZZ 2>> wfuzz-" + output + ".html;"
+cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/dirTraversal.txt --hc 400,401,403,404 -o html " + address + "/FUZZ 2>> wfuzz-" + output + ".html;"
+cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/dirTraversal-win.txt --hc 400,401,403,404 -o html " + address + "/FUZZ 2>> wfuzz-" + output + ".html;"
+cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/domino.txt --hc 400,401,403,404 -o html " + address + "/FUZZ 2>> wfuzz-" + output + ".html;"
+cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/fatwire_pagenames.txt --hc 400,401,403,404 -o html " + address + "/FUZZ 2>> wfuzz-" + output + ".html;"
+cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/fatwire.txt --hc 400,401,403,404 -o html " + address + "/FUZZ 2>> wfuzz-" + output + ".html;"
+cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/frontpage.txt --hc 400,401,403,404 -o html " + address + "/FUZZ 2>> wfuzz-" + output + ".html;"
+cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/iis.txt --hc 400,401,403,404 -o html " + address + "/FUZZ 2>> wfuzz-" + output + ".html;"
+cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/iplanet.txt --hc 400,401,403,404 -o html " + address + "/FUZZ 2>> wfuzz-" + output + ".html;"
+cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/jrun.txt --hc 400,401,403,404 -o html " + address + "/FUZZ 2>> wfuzz-" + output + ".html;"
+cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/netware.txt --hc 400,401,403,404 -o html " + address + "/FUZZ 2>> wfuzz-" + output + ".html;"
+cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/oracle9i.txt --hc 400,401,403,404 -o html " + address + "/FUZZ 2>> wfuzz-" + output + ".html;"
+cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/sharepoint.txt --hc 400,401,403,404 -o html " + address + "/FUZZ 2>> wfuzz-" + output + ".html;"
+cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/sql_inj.txt --hc 400,401,403,404 -o html " + address + "/FUZZ 2>> wfuzz-" + output + ".html;"
+cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/sunas.txt --hc 400,401,403,404 -o html " + address + "/FUZZ 2>> wfuzz-" + output + ".html;"
+cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/tests.txt --hc 400,401,403,404 -o html " + address + "/FUZZ 2>> wfuzz-" + output + ".html;"
+cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/tomcat.txt --hc 400,401,403,404 -o html " + address + "/FUZZ 2>> wfuzz-" + output + ".html;"
+cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/vignette.txt --hc 400,401,403,404 -o html " + address + "/FUZZ 2>> wfuzz-" + output + ".html;"
+cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/weblogic.txt --hc 400,401,403,404 -o html " + address + "/FUZZ 2>> wfuzz-" + output + ".html;"
+cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/websphere.txt --hc 400,401,403,404 -o html " + address + "/FUZZ 2>> wfuzz-" + output + ".html;"
 cmd += '"&'
 
 os.system(cmd)

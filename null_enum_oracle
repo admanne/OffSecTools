@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 __author__ = 'admanne'
 import sys
 import os
@@ -14,8 +14,8 @@ port = sys.argv[2].strip()
 os.system(
     "xterm -e \"nmap -sV -Pn -vv -p %s --script="
     "oracle-brute.nse,"
-	"oracle-brute-stealth.nse,"
-	"oracle-enum-users.nse,"
-	"oracle-sid-brute"
+    "oracle-brute-stealth.nse,"
+    "oracle-enum-users.nse,"
+    "oracle-sid-brute"
     " -oX 'enum_oracle_%s.xml' -oN 'enum_oracle_%s.nmap' %s\";bash" % (
         port, address, address, address))

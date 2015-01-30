@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 __author__ = 'admanne'
 import sys
 import os
@@ -14,15 +14,15 @@ port = sys.argv[2].strip()
 os.system(
     "xterm -e \"nmap -sV -sT -Pn -vv -p %s --script="
     "mysql-audit,"
-	"mysql-brute,"
-	"mysql-databases,"
-	"mysql-dump-hashes,"
-	"mysql-empty-password,"
-	"mysql-enum,"
-	"mysql-info,"
-	"mysql-query,"
-	"mysql-users,"
-	"mysql-variables,"
-	"mysql-vuln-cve2012-2122"
+    "mysql-brute,"
+    "mysql-databases,"
+    "mysql-dump-hashes,"
+    "mysql-empty-password,"
+    "mysql-enum,"
+    "mysql-info,"
+    "mysql-query,"
+    "mysql-users,"
+    "mysql-variables,"
+    "mysql-vuln-cve2012-2122"
     " -oX 'enum_mysql_%s.xml' -oN 'enum_mysql_%s.nmap' %s\" &" % (
         port, address, address, address))

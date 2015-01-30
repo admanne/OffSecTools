@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 __author__ = 'admanne'
 import sys
 import os
@@ -13,7 +13,7 @@ port = sys.argv[2].strip()
 # Enum
 # -sS/sT/sA/sW/sM: TCP SYN/Connect()/ACK/Window/Maimon scans
 # default sT
-enum=(
+enum = (
     "xterm -e \"nmap -sV -sT -Pn -vv -p %s --script=http-huawei-hg5xx-vuln,http-iis-webdav-vuln,http-vmware-path-vuln,http-vuln-cve2009-3960,"
     "http-vuln-cve2010-0738,http-vuln-cve2010-2861,http-vuln-cve2011-3192,http-vuln-cve2011-3368,http-vuln-cve2012-1823,"
     "http-vuln-cve2013-0156 -oX 'enum_http_%s.xml' -oN 'enum_http_%s.nmap' %s\" &" % (

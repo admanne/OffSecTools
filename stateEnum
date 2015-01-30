@@ -1,0 +1,168 @@
+#!/usr/bin/env python
+#
+__author__ = 'admanne'
+import json
+import urllib2
+import os
+from os.path import expanduser
+
+
+def getStateJson():
+    state = '''
+    [
+    {"alpha_code":"AL","code":"1","name":"Alabama"},
+    {"alpha_code":"AK","code":"54","name":"Alaska"},
+    {"alpha_code":"AZ","code":"2","name":"Arizona"},
+    {"alpha_code":"AR","code":"3","name":"Arkansas"},
+    {"alpha_code":"CA","code":"4","name":"California"},
+    {"alpha_code":"CO","code":"5","name":"Colorado"},
+    {"alpha_code":"CT","code":"6","name":"Connecticut"},
+    {"alpha_code":"DE","code":"7","name":"Delaware"},
+    {"alpha_code":"DC","code":"8","name":"District of Columbia"},
+    {"alpha_code":"FL","code":"9","name":"Florida"},
+    {"alpha_code":"GA","code":"10","name":"Georgia"},
+    {"alpha_code":"HI","code":"52","name":"Hawaii"},
+    {"alpha_code":"ID","code":"11","name":"Idaho"},
+    {"alpha_code":"IL","code":"12","name":"Illinois"},
+    {"alpha_code":"IN","code":"13","name":"Indiana"},
+    {"alpha_code":"IA","code":"14","name":"Iowa"},
+    {"alpha_code":"KS","code":"15","name":"Kansas"},
+    {"alpha_code":"KY","code":"16","name":"Kentucky"},
+    {"alpha_code":"LA","code":"17","name":"Louisiana"},
+    {"alpha_code":"ME","code":"18","name":"Maine"},
+    {"alpha_code":"MD","code":"19","name":"Maryland"},
+    {"alpha_code":"MA","code":"20","name":"Massachusetts"},
+    {"alpha_code":"MI","code":"21","name":"Michigan"},
+    {"alpha_code":"MN","code":"22","name":"Minnesota"},
+    {"alpha_code":"MS","code":"23","name":"Mississippi"},
+    {"alpha_code":"MO","code":"24","name":"Missouri"},
+    {"alpha_code":"MT","code":"25","name":"Montana"},
+    {"alpha_code":"NE","code":"26","name":"Nebraska"},
+    {"alpha_code":"NV","code":"27","name":"Nevada"},
+    {"alpha_code":"NH","code":"28","name":"New Hampshire"},
+    {"alpha_code":"NJ","code":"29","name":"New Jersey"},
+    {"alpha_code":"NM","code":"30","name":"New Mexico"},
+    {"alpha_code":"NY","code":"31","name":"New York"},
+    {"alpha_code":"NC","code":"32","name":"North Carolina"},
+    {"alpha_code":"ND","code":"33","name":"North Dakota"},
+    {"alpha_code":"OH","code":"34","name":"Ohio"},
+    {"alpha_code":"OK","code":"35","name":"Oklahoma"},
+    {"alpha_code":"OR","code":"36","name":"Oregon"},
+    {"alpha_code":"PR","code":"58","name":"Puerto Rico"},
+    {"alpha_code":"RI","code":"38","name":"Rhode Island"},
+    {"alpha_code":"SC","code":"39","name":"South Carolina"},
+    {"alpha_code":"SD","code":"40","name":"South Dakota"},
+    {"alpha_code":"TN","code":"41","name":"Tennessee"},
+    {"alpha_code":"TX","code":"42","name":"Texas"},
+    {"alpha_code":"UT","code":"43","name":"Utah"},
+    {"alpha_code":"VT","code":"44","name":"Vermont"},
+    {"alpha_code":"VI","code":"71","name":"Virgin Islands"},
+    {"alpha_code":"VA","code":"45","name":"Virginia"},
+    {"alpha_code":"WA","code":"46","name":"Washington"},
+    {"alpha_code":"WV","code":"47","name":"West Virginia"},
+    {"alpha_code":"WI","code":"48","name":"Wisconsin"},
+    {"alpha_code":"WY","code":"49","name":"Wyoming"},
+    {"alpha_code":"PA","code":"37","name":"Pennsylvania"}
+    ]
+    '''
+    return state
+
+
+home = expanduser("~")
+LOCAL_FILES = home + '/.STATE_METADATA/'
+STATE_CODE = ""
+STATE_ALPHA_CODE = ""
+STATE_NAME = ""
+STATE_FILE_NAME = ""
+JSON_STATES = ""
+JSON_STATE = ""
+
+
+def start():
+    global STATE_CODE
+    global STATE_ALPHA_CODE
+    global STATE_NAME
+    global JSON_STATES
+
+    state = raw_input('Please enter a state code:')
+    JSON_STATES = json.loads(getStateJson())
+    match = 0
+
+    for i in JSON_STATES:
+        alpha_code = i["alpha_code"]
+        code = i["code"]
+        name = i["name"]
+        if state.upper() == i["alpha_code"]:
+            STATE_CODE = i["code"]
+            STATE_ALPHA_CODE = i["alpha_code"]
+            STATE_NAME = i["name"]
+            match = match + 1
+        if state == i["code"]:
+            STATE_CODE = i["code"]
+            STATE_ALPHA_CODE = i["alpha_code"]
+            STATE_NAME = i["name"]
+            match = match + 1
+
+    if match > 0:
+        stateJsonMetaData(STATE_ALPHA_CODE)
+    else:
+        print("Sorry, I don't have any data for that state...")
+
+
+def saveMetaData():
+    global STATE_FILE_NAME
+    global JSON_STATE
+    global LOCAL_FILES
+
+    if not os.path.exists(LOCAL_FILES):
+        os.makedirs(LOCAL_FILES)
+
+    json_file = open(LOCAL_FILES + STATE_FILE_NAME, "w+")
+    json_file.write(json.dumps(JSON_STATE))
+    json_file.close()
+
+
+def saveCheck():
+    save = raw_input('Save meta data? y/n ')
+    if save == 'y':
+        saveMetaData()
+
+
+def stateJsonMetaData(state):
+    global STATE_FILE_NAME
+    global LOCAL_FILES
+    global JSON_STATE
+
+    STATE_FILE_NAME = state + '.json'
+    json_file_path = LOCAL_FILES + STATE_FILE_NAME
+
+    if os.path.exists(json_file_path):
+        print("Using cached data...")
+        json_file = open(json_file_path, "r")
+        JSON_STATE = json.load(json_file)
+        json_file.close()
+    else:
+        j_url = 'http://api.sba.gov/geodata/city_county_links_for_state_of/'
+        j_url = j_url + STATE_FILE_NAME
+        print("Downloading fresh data from " + j_url)
+        JSON_STATE = json.load(urllib2.urlopen(j_url))
+        saveCheck()
+
+
+def getCountyInfoForState():
+    global STATE_CODE
+    global STATE_ALPHA_CODE
+    global STATE_NAME
+    global STATE_FILE_NAME
+    global JSON_STATE
+
+    if len(STATE_NAME) > 1:
+        print('County info for ' + STATE_NAME)
+        print('County : Code : url')
+        for i in JSON_STATE:
+            if i["county_name"] is not None:
+                print(i["county_name"] + ' : ' + i["fips_county_cd"] + ' : ' + i["url"])
+
+
+start()
+getCountyInfoForState()

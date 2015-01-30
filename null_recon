@@ -1,10 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 __author__ = 'mannea'
 import os
 import os.path
 import sys
 import datetime
-import time
 import threading
 import xml.etree.ElementTree as ET
 
@@ -19,7 +18,7 @@ current_dir = os.popen('pwd').read().rstrip()
 run_dir = current_dir + '/' + str(date_time_stamp())
 log_file = run_dir + '/' + 'recon.log'
 #
-#  width+height+x+y
+# width+height+x+y
 # xt_width="100"
 # xt_height="10"
 
@@ -32,13 +31,12 @@ log_file = run_dir + '/' + 'recon.log'
 
 
 class LogWriter():
-
     def __init__(self):
         pass
 
     @staticmethod
     def info(txt):
-        txt = "INFO:: "+date_time_stamp() + "| " + txt
+        txt = "INFO:: " + date_time_stamp() + "| " + txt
         l = open(log_file, "a")
         l.write(txt + '\n')
         print(txt)
@@ -46,7 +44,7 @@ class LogWriter():
 
     @staticmethod
     def warning(txt):
-        txt = "WARN:: "+date_time_stamp() + "| " + txt
+        txt = "WARN:: " + date_time_stamp() + "| " + txt
         l = open(log_file, "a")
         l.write(txt + '\n')
         print(txt)
@@ -54,7 +52,7 @@ class LogWriter():
 
     @staticmethod
     def error(txt):
-        txt = "ERROR:: "+date_time_stamp() + "| " + txt
+        txt = "ERROR:: " + date_time_stamp() + "| " + txt
         l = open(log_file, "a")
         l.write(txt + '\n')
         print(txt)
@@ -70,23 +68,28 @@ def nmap_tcp_scan(address):
     address = address.strip()
     scan_xml_log = run_dir + '/' + address + '/' + 'TCP_scan.xml'
     scan_log = run_dir + '/' + address + '/' + 'TCP_scan.nmap'
-    tcp_scan = "xterm -e \" sudo nmap -vv -Pn -A -sC -sT -T 4 --top-ports 2000 -p- -oN '%s' -oX '%s' %s \"" % (scan_log, scan_xml_log, address)
+    tcp_scan = "xterm -e \" sudo nmap -vv -Pn -A -sC -sT -T 4 --top-ports 2000 -p- -oN '%s' -oX '%s' %s \"" % (
+    scan_log, scan_xml_log, address)
     os.system(tcp_scan)
     eval_results(scan_xml_log)
+
 
 def nmap_udp_scan(address):
     LogWriter().info("nmap UDP scan on " + address)
     address = address.strip()
     scan_xml_log = run_dir + '/' + address + '/' + 'UDP_scan.xml'
     scan_log = run_dir + '/' + address + '/' + 'UDP_scan.nmap'
-    udp_scan = "xterm -e \"sudo nmap -vv -Pn -A -sC -sU -T 4 --top-ports 1000 -oN '%s' -oX '%s' %s \"" % (scan_log, scan_xml_log, address)
+    udp_scan = "xterm -e \"sudo nmap -vv -Pn -A -sC -sU -T 4 --top-ports 1000 -oN '%s' -oX '%s' %s \"" % (
+    scan_log, scan_xml_log, address)
     os.system(udp_scan)
     #eval_results(scan_xml_log)
+
+
 ##
 ##
 ##
 def enum_ftp(address, port, source_protocol):
-    LogWriter.info(str('enumerating ftp: ' + address +':'+ port))
+    LogWriter.info(str('enumerating ftp: ' + address + ':' + port))
     scan_log = run_dir + '/' + address + '/' + source_protocol + '_%s_ENUM_FTP.xml' % (port)
     http_scan = "xterm -e \"nmap -sV -Pn -vv -p %s --script=ftp-anon,ftp-bounce,ftp-libopie,ftp-proftpd-backdoor,ftp-vsftpd-backdoor,ftp-vuln-cve2010-4221 -oX '%s' %s \"" % (
         port, scan_log, address)
@@ -94,23 +97,22 @@ def enum_ftp(address, port, source_protocol):
     os.system(http_scan)
 
 
-
 def enum_ssh(address, port, source_protocol):
-    LogWriter.info(str('enumerating ssh: ' + address +':'+ port))
+    LogWriter.info(str('enumerating ssh: ' + address + ':' + port))
     scan_log = run_dir + '/' + address + '/' + source_protocol + '_%s_ENUM_SSH.xml' % (port)
     enum = (
         "xterm -e \"sudo nmap -sV -Pn -vv -p %s --script=ssh-hostkey --script-args ssh_hostkey=all -oX '%s' %s \"" % (
-        port, scan_log, address)
+            port, scan_log, address)
     )
     LogWriter.info(str(enum))
     os.system(enum)
 
 
 def enum_http(address, port, source_protocol):
-    LogWriter.info(str('enumerating http: ' + address +':'+ port))
+    LogWriter.info(str('enumerating http: ' + address + ':' + port))
     scan_log = run_dir + '/' + address + '/' + source_protocol + '_%s_ENUM_HTTP' % (port)
 
-    enum=(
+    enum = (
         "xterm -e \"nmap -sV -sT -Pn -vv -p %s --script=http-huawei-hg5xx-vuln,http-iis-webdav-vuln,http-vmware-path-vuln,http-vuln-cve2009-3960,"
         "http-vuln-cve2010-0738,http-vuln-cve2010-2861,http-vuln-cve2011-3192,http-vuln-cve2011-3368,http-vuln-cve2012-1823,"
         "http-vuln-cve2013-0156 -oX '%s.xml' -oN '%s.nmap' %s\"" % (
@@ -127,23 +129,23 @@ def enum_http(address, port, source_protocol):
 
 
 def enum_mysql(address, port, source_protocol):
-    LogWriter.info(str('enumerating mysql: ' + address +':'+ port))
+    LogWriter.info(str('enumerating mysql: ' + address + ':' + port))
     scan_log = run_dir + '/' + address + '/' + source_protocol + '_%s_ENUM_MYSQL' % (port)
 
-    enum=(
-    "xterm -e \"nmap -sV -Pn -vv -p %s --script="
-    "ms-sql-brute,"
-    "ms-sql-config,"
-    "ms-sql-dac,"
-    "ms-sql-dump-hashes,"
-    "ms-sql-empty-password,"
-    "ms-sql-hasdbaccess,"
-    "ms-sql-info,"
-    "ms-sql-query,"
-    "ms-sql-tables,"
-    "ms-sql-xp-cmdshell"
-    " -oX '%s.xml' -oN '%s.nmap' %s\"" % (
-        port, scan_log, scan_log, address)
+    enum = (
+        "xterm -e \"nmap -sV -Pn -vv -p %s --script="
+        "ms-sql-brute,"
+        "ms-sql-config,"
+        "ms-sql-dac,"
+        "ms-sql-dump-hashes,"
+        "ms-sql-empty-password,"
+        "ms-sql-hasdbaccess,"
+        "ms-sql-info,"
+        "ms-sql-query,"
+        "ms-sql-tables,"
+        "ms-sql-xp-cmdshell"
+        " -oX '%s.xml' -oN '%s.nmap' %s\"" % (
+            port, scan_log, scan_log, address)
     )
 
     LogWriter.info(str(enum))
@@ -151,11 +153,11 @@ def enum_mysql(address, port, source_protocol):
 
 
 def enum_vnc(address, port, source_protocol):
-    LogWriter.info(str('enumerating vnc: ' + address +':'+ port))
+    LogWriter.info(str('enumerating vnc: ' + address + ':' + port))
     scan_log = run_dir + '/' + address + '/' + source_protocol + '_%s_ENUM_VNC.xml' % (port)
     enum = (
         "xterm -e \"sudo nmap -sV -Pn -vv -p %s --script=vnc-info,vnc-brute,realvnc-auth-bypass -oX '%s' %s \"" % (
-        port, scan_log, address)
+            port, scan_log, address)
     )
     LogWriter.info(str(enum))
     os.system(enum)
@@ -223,6 +225,7 @@ def enum_targets(target_list, source_protocol):
         if target['service'] == 'vnc':
             t = threading.Thread(target=enum_vnc, args=(target['address'], target['port'], source_protocol))
             t.start()
+
 
 #
 #

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 __author__ = 'mannea'
 import sys
 import os
@@ -12,5 +12,6 @@ user = sys.argv[2].strip()
 pass_list = sys.argv[3].strip()
 service = sys.argv[4].strip()
 
-cmd = 'xterm +sb -geometry 110x24 -e "medusa -h %s -U %s -P %s -e ns -t 2 -f -M %s" &' % (address, user, pass_list, service)
+cmd = 'xterm +sb -geometry 110x24 -e "medusa -h %s -U %s -P %s -e ns -t 2 -f -M %s" &' % (
+address, user, pass_list, service)
 os.system(cmd)

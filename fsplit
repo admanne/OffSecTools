@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # __author__ = 'mannea'
 #
 import sys
@@ -14,4 +14,4 @@ split_lines = sys.argv[2].strip()
 file_lines = sum(1 for line in open(in_file))
 new_lines = (int(float(file_lines)) / int(float(split_lines)))
 print('File: ' + in_file + 'New Lines per file: ' + str(new_lines))
-os.system("split -d --verbose -l %s %s %s" % (new_lines, in_file, in_file+'.'))
+os.system("split -d --verbose -l %s %s %s" % (new_lines, in_file, in_file + '.'))

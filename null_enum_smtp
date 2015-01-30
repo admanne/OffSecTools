@@ -1,7 +1,6 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 import socket
 import sys
-import subprocess
 
 if len(sys.argv) != 3:
     print "Usage: null_enum_smtp <ip address> output"
@@ -9,7 +8,7 @@ if len(sys.argv) != 3:
     print "Example: xterm -e \"null_enum_smtp 192.168.24.67 smtp_enum.txt; bash\"& "
     sys.exit(0)
 
-#SMTPSCAN = "nmap -vv -sV -Pn -p 25,465,587 --script=smtp-vuln* %s" % (sys.argv[1])
+# SMTPSCAN = "nmap -vv -sV -Pn -p 25,465,587 --script=smtp-vuln* %s" % (sys.argv[1])
 #results = subprocess.check_output(SMTPSCAN, shell=True)
 
 #f = open("results/smtpnmapresults.txt", "a")
@@ -20,35 +19,34 @@ debug = False
 
 print "INFO: Trying SMTP Enum on " + sys.argv[1]
 
-
 cnt = 0
 names = open('/root/lists/namelist.txt', 'r')
 output_file = sys.argv[2].strip()
 l = open(output_file, "a")
 
 for name in names:
-    cnt +=1
+    cnt += 1
     if debug:
-        print('Trying :: '+name)
+        print('Trying :: ' + name)
     found = False
 
-    s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    connect=s.connect((sys.argv[1],25))
-    banner=s.recv(1024)
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    connect = s.connect((sys.argv[1], 25))
+    banner = s.recv(1024)
     if debug:
         print(banner)
     s.send('HELO test.org\r\n')
-    result= s.recv(1024)
+    result = s.recv(1024)
     if ('501' in result):
         sys.exit(result)
     if debug:
         print(result)
     s.send('VRFY ' + name.strip() + '\r\n')
-    result=s.recv(1024)
+    result = s.recv(1024)
     if debug:
         print(result)
- #    if ("not implemented" in result) or ("disallowed" in result):
-	# sys.exit("INFO: VRFY Command not implemented on " + sys.argv[1])
+        #    if ("not implemented" in result) or ("disallowed" in result):
+    # sys.exit("INFO: VRFY Command not implemented on " + sys.argv[1])
     if ("250" in result):
         found = True
     else:
@@ -56,11 +54,11 @@ for name in names:
             if debug:
                 print('Attempting to enum via MAIL TO')
             s.send('MAIL FROM: me@test.org\r\n')
-            result=s.recv(1024)
+            result = s.recv(1024)
             if debug:
                 print(result)
             s.send('RCPT TO: ' + name.strip() + '\r\n')
-            result=s.recv(1024)
+            result = s.recv(1024)
             if debug:
                 print(result)
             if ("250" in result):

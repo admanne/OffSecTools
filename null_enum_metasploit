@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 __author__ = 'admanne'
 import sys
 import os
@@ -11,9 +11,10 @@ if len(sys.argv) != 2:
 address = sys.argv[1].strip()
 # Enum
 enum = ("xterm -e \"nmap -sV -sT -Pn -vv --script="
-	"metasploit-info,"
-	"metasploit-xmlrpc-brute,"
-	"metasploit-msgrpc-brute"
-    " --script-args=unsafe=1 -oX 'enum_metasploit_%s.xml' -oN 'enum_metasploit_%s.nmap' %s ; bash\" &" % (address, address, address))
+        "metasploit-info,"
+        "metasploit-xmlrpc-brute,"
+        "metasploit-msgrpc-brute"
+        " --script-args=unsafe=1 -oX 'enum_metasploit_%s.xml' -oN 'enum_metasploit_%s.nmap' %s ; bash\" &" % (
+        address, address, address))
 print(enum)
 os.system(enum)

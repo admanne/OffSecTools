@@ -1,7 +1,7 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 import socket
 # Create an array of buffers, from 10 to 2000, with increments of 20. 
-buffer=["A"]
+buffer = ["A"]
 counter = 100
 while len(buffer) <= 30:
     buffer.append("A" * counter)

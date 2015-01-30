@@ -12,8 +12,8 @@ finalret = newret.scan(/.{2}/)
 $i = 0
 
 puts "The new value is... "
-while $i < finalret.length  do
-   print '\x'+finalret[$i]
-   $i +=1
+while $i < finalret.length do
+  print '\x'+finalret[$i]
+  $i +=1
 end
 puts

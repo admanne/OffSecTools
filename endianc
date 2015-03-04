@@ -1,9 +1,8 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby 
 
-puts "Please provide the address to convert..."
-puts "Example: 0x7c86fed3"
+#puts "Example: 0x7c86fed3"
 
-ret = gets.chomp
+ret = ARGV[0].chomp
 ret = ret.hex
 #ret = 0x7c86fed3
 newret = ([ret].pack('V')).unpack('H*').first
@@ -11,7 +10,7 @@ finalret = newret.scan(/.{2}/)
 
 $i = 0
 
-puts "The new value is... "
+#puts "The new value is... "
 while $i < finalret.length do
   print '\x'+finalret[$i]
   $i +=1

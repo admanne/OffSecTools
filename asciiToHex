@@ -1,0 +1,15 @@
+#!/usr/bin/ruby
+
+puts "Please provide the address to convert..."
+puts "Example: I'm a pizza"
+
+ret = gets.chomp
+
+$i = 0
+puts "The new value is... "
+while $i < ret.length do
+  print '\x'
+  print ret[$i].unpack('H*')*""
+  $i +=1
+end
+puts

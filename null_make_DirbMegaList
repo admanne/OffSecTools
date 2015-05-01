@@ -39,8 +39,6 @@ open_dirb_file = open(dirb_file, "w")
 
 for item in clean:
     open_dirb_file.write(item+"\n")
-    #os.system("echo "+item+" >> "+dirb_file)
-    #print repr(item)
 
 open_dirb_file.close()
 

@@ -22,6 +22,51 @@ if len(sys.argv) != 2:
     print "Usage: null_httpfuzz address "
     sys.exit(0)
 
+
+##### MAKE DIRB LIST
+
+dirb_file = "/root/lists/DirbMegaList.txt"
+os.system("rm "+dirb_file)
+
+os.system("mkdir ~/lists")
+os.system("for i in `ls /usr/share/dirb/wordlists/vulns/`; do cat /usr/share/dirb/wordlists/vulns/$i >> "+dirb_file+"; done;")
+os.system("for i in `ls /usr/share/dirb/wordlists/`; do cat /usr/share/dirb/wordlists/$i >> "+dirb_file+"; done;")
+
+def getCleanList(dirty_list):
+    clean_list = []
+
+    for item in dirty_list:
+        clean_text = item
+        clean_text = clean_text.rstrip('\r\n')
+        clean_text = clean_text.rstrip('\r')
+        clean_text = clean_text.rstrip('\n')
+        clean_text = clean_text.rstrip('\r')
+
+        clean_list.append(clean_text)
+
+    clean_list.sort()
+    clean_list = list(set(clean_list))
+    clean_list.sort()
+
+    return clean_list
+
+List = open(dirb_file).readlines()
+clean = getCleanList(List)
+
+os.system("rm "+dirb_file)
+
+open_dirb_file = open(dirb_file, "w")
+
+for item in clean:
+    open_dirb_file.write(item+"\n")
+
+open_dirb_file.close()
+
+print (dirb_file + " created! ")
+
+#####
+
+
 address = str(sys.argv[1])
 output = date_time_stamp() + ".txt"
 
@@ -75,3 +120,12 @@ cmd += " wfuzz -c -z file,/usr/share/wfuzz/wordlist/vulns/websphere.txt --hc 400
 cmd += '"&'
 
 os.system(cmd)
+
+
+
+
+
+
+
+
+

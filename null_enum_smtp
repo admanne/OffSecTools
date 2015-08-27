@@ -15,7 +15,7 @@ if len(sys.argv) != 3:
 #f.write(results)
 #f.close
 
-debug = False
+debug = True
 
 print "INFO: Trying SMTP Enum on " + sys.argv[1]
 
@@ -53,7 +53,8 @@ for name in names:
         if ('try RCPT' in result):
             if debug:
                 print('Attempting to enum via MAIL TO')
-            s.send('MAIL FROM: me@test.org\r\n')
+            #s.send('MAIL FROM: me@test.org\r\n')
+            s.send('MAIL FROM: me@192.168.2.51\r\n')
             result = s.recv(1024)
             if debug:
                 print(result)

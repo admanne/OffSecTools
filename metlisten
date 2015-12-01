@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+#
 clear
 echo "*********************************************"
 echo "   METASPLOIT LINUX METERPRETER LISTENER    *"

